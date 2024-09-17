@@ -3,8 +3,10 @@ import java.util.*;
 
 class LevenshteinDistanceDP {
 
+    // Méthode pour calculer la distance de Levenshtein entre deux chaînes
     static int computeLevenshteinDistanceDP(String s1, String s2) {
         int[][] dp = new int[s1.length() + 1][s2.length() + 1];
+
         for (int i = 0; i <= s1.length(); i++) {
             dp[i][0] = i;
         }
@@ -22,25 +24,13 @@ class LevenshteinDistanceDP {
         return dp[s1.length()][s2.length()];
     }
 
-/*
-    // Check for distinct characters in str1 and str2
-    static int numOfReplacement(char c1, char c2) {
-        return c1 == c2 ? 0 : 1;
-    }
-
-    // Return the minimum value among the provided operations
-    static int minmEdits(int... nums) {
-        return Arrays.stream(nums).min().orElse(Integer.MAX_VALUE);
-    }
-*/
-
+    // Chargement d'un fichier texte et stockage dans une ArrayList
     static void textLoader(String filename) throws IOException {
         ArrayList<String> wordList = new ArrayList<>();
         try (BufferedReader breader = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = breader.readLine()) != null) {
                 String word = line.trim();
-
                 wordList.add(word);
             }
         } catch (IOException e) {
@@ -50,7 +40,7 @@ class LevenshteinDistanceDP {
         System.out.println("Number of words in ArrayList: " + wordList.size());
     }
 
-    // stockage liste des mots dans hashset
+    // Stockage des mots dans un HashSet pour optimiser la recherche
     static HashSet<String> getWordSet(String filename) throws IOException {
         HashSet<String> wordSet = new HashSet<>();
         try (BufferedReader breader = new BufferedReader(new FileReader(filename))) {
@@ -63,12 +53,12 @@ class LevenshteinDistanceDP {
         return wordSet;
     }
 
-    // exist or not
+    // Vérifie si un mot existe dans le dictionnaire
     static boolean isExistInDictionary(String word, HashSet<String> dictionary) {
         return dictionary.contains(word);
     }
 
-    //tester si un mot donné par l’utilisateur existe dans le dictionnaire ou pas.
+    // Tester si un mot donné par l'utilisateur existe dans le dictionnaire ou pas
     static void testWordInDictionary(String filename) throws IOException {
         HashSet<String> dictionary = getWordSet(filename);
         Scanner scanner = new Scanner(System.in);
@@ -79,21 +69,20 @@ class LevenshteinDistanceDP {
             System.out.println("Le mot \"" + word + "\" existe dans le dictionnaire.");
         } else {
             System.out.println("Le mot \"" + word + "\" n'existe pas dans le dictionnaire.");
-            //execution de proposalWords
+            // Exécution de proposalWords pour obtenir des suggestions
             ArrayList<String> proposals = proposalWords(word, dictionary);
             System.out.println("Propositions de mots proches :");
             for (String proposition : proposals) {
                 System.out.println("- " + proposition);
             }
-
         }
     }
 
-    //proches, selon la distance de Levenshtein dans le cas où un mot donné n’existe pas dans le dictionnaire.
-    //donner une liste de propositions de quelques mots les plus
+    // Propose des mots proches selon la distance de Levenshtein dans le cas où un mot donné n'existe pas dans le dictionnaire
     static ArrayList<String> proposalWords(String word, HashSet<String> dictionary) {
         ArrayList<String> proposalWords = new ArrayList<>();
 
+        // Utilisation d'une PriorityQueue pour trier les mots par distance de Levenshtein
         PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(
                 Map.Entry.comparingByValue()
         );
@@ -113,7 +102,7 @@ class LevenshteinDistanceDP {
         return proposalWords;
     }
 
-    //ecriture dans un fichier
+    // Écriture d'une phrase dans un fichier texte
     static void writeInFile(String sentence, String filename) {
         try {
             FileWriter fileWriter = new FileWriter(filename, true); // 'true' pour append
@@ -128,33 +117,30 @@ class LevenshteinDistanceDP {
         }
     }
 
-    //
+    // Traitement d'une phrase, vérification des mots et suggestion d'alternatives si nécessaire
     static void writePhrases(String filename) throws IOException {
         HashSet<String> dictionary = getWordSet(filename);
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Entrez un phrase: ");
+        System.out.print("Entrez une phrase: ");
         String phrase = scanner.nextLine().trim();
         String[] sentence = phrase.split(" ");
-        writeInFile(phrase,"ressources/texte.txt");
-        for (String word : sentence) {
-            ArrayList<String> proposals = proposalWords(word, dictionary);
 
+        writeInFile(phrase, "ressources/texte.txt");
+
+        // Pour chaque mot, vérifier l'existence dans le dictionnaire et proposer des alternatives si nécessaire
+        for (String word : sentence) {
             if (!isExistInDictionary(word, dictionary)) {
-               for (String proposal : proposals) {
-                   writeInFile(proposal,"ressources/texte.err");
-               }
+                ArrayList<String> proposals = proposalWords(word, dictionary);
+                for (String proposal : proposals) {
+                    writeInFile(proposal, "ressources/texte.err");
+                }
             }
         }
-
     }
+
     // Driver Code
     public static void main(String[] args) throws IOException {
-        //Example usage of Levenshtein distance calculation
-        //String s1 = "CHIEN";
-        //String s2 = "NICHE";
-        //System.out.println("Levenshtein Distance: " + computeLevenshteinDistanceDP(s1, s2));
         String filename = "ressources/gutenberg.txt";
-        //writePhrases(filename);
         textLoader(filename);
         testWordInDictionary(filename);
     }

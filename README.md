@@ -1,3 +1,5 @@
 # leven
 # correcteur - suggestion de mots 
-(tokony mbola tohizana + interface et possibilite d'auto correction)
+
+# interface
+(pas encore optimale mais deja fonctionnelle, clic droit pour voir les suggestions)
